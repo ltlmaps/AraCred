@@ -4,7 +4,7 @@
 const fs = require('fs');
 const BigNumber = require('bignumber.js');
 const book = require('../config/addressbook.json');
-const data = require('../scores.json');
+const data = require('../log/scores.json');
 const transaction = require('../config/dao.json');
 
 /**

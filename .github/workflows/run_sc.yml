@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - sc-patch
   # As well as every 6 hours.
   schedule:
     - cron: 0 */6 * * *
@@ -38,5 +39,6 @@ jobs:
           weights: ./config/weights.json
           project: "@AraCred"
           project-file: ./config/project.json
+          scores-json: ./log/scores.json
           branch-against: master
           automated: "true"
