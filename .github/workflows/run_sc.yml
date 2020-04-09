@@ -38,7 +38,7 @@ jobs:
         with:
           weights: ./config/weights.json
           project: "@AraCred"
-          project-file: ./config/project.json
-          scores-json: ./log/scores.json
+          project-file: /config/project.json
+          scores-json: /log/scores.json
           branch-against: master
           automated: "true"
