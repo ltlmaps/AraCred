@@ -1,5 +1,5 @@
 name: "Run aragonCLI"
- 
+
 on: ["push"]
 
 jobs:
@@ -31,5 +31,7 @@ jobs:
         run: node ./src/processGrain.js
       - name: Echo Transaction Settings
         run: cat ./log/transactionSettings.json
+      - name: logging Transaction
+        run: node ./src/mint.js
       - name: Sending Transaction
         run: node ./src/mint.js | sh
