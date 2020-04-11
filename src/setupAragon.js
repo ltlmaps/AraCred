@@ -4,10 +4,10 @@ const fs = require('fs');
 const userName = require('os').userInfo().username;
 
 const {INFURA_KEY, PRIVATE_KEY} = process.env;
-const fileContent = () => {
+const fileContent = (network) => {
 	return JSON.stringify(
 		{
-			rpc: `https://rinkeby.infura.io/v3/${INFURA_KEY}`,
+			rpc: `https://${network}.infura.io/v3/${INFURA_KEY}`,
 			keys: [`${PRIVATE_KEY}`],
 		},
 		null,
@@ -24,12 +24,23 @@ const saveFile = () => {
 		}
 		fs.writeFile(
 			`/home/${userName}/.aragon/rinkeby_key.json`,
-			fileContent(),
+			fileContent('rinkeby'),
 			(err) => {
 				if (err) {
-					console.log('Error writing file', err);
+					console.log('Error writing files', err);
 				} else {
-					console.log('Successfully setup signer');
+					console.log('Successfully setup Rinkeby signer');
+				}
+			},
+		);
+		fs.writeFile(
+			`/home/${userName}/.aragon/rinkeby_key.json`,
+			fileContent('mainnet'),
+			(err) => {
+				if (err) {
+					console.log('Error writing files', err);
+				} else {
+					console.log('Successfully setup Mainnet signer');
 				}
 			},
 		);
