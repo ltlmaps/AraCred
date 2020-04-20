@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /* eslint-disable consistent-return */
 const fs = require('fs');
 const BigNumber = require('bignumber.js');
@@ -31,6 +33,38 @@ const getScore = (score, addressBook) => {
 };
 
 /**
+ * processGrain helper function. accepts a user object from the `scores.json` file and
+ * the address book. returns an array with whitelisted addresses and
+ * interval scored
+ * @param {Object} users, users from scores
+ * @param {Object} addressBook, the addressBook
+ * @returns {array} whitelisted addresses and scores
+ */
+const whitelisted = (users, addressBook) => {
+  return users
+    .filter((leaf) => getScore(leaf, addressBook))
+    .map((leaf) => getScore(leaf, addressBook));
+};
+
+/**
+ * processGrain helper function. Accepts a whitelist array [addresses, scores],
+ * and a token budget. returns the whitelist array with scores normalised
+ * as a percentage of the weekly budget
+ * @param {array} whitelist
+ * @param {int} weekly token budget
+ */
+const normalised = (whitelist, tokens) => {
+  const total = whitelist
+    .map((score) => score[1])
+    .reduce((acc, val) => BigNumber(acc).plus(BigNumber(val)).toString());
+
+  return whitelisted.map((user) => [
+    user[0],
+    BigNumber(user[1]).dividedBy(total).multipliedBy(tokens).toString(),
+  ]);
+};
+
+/**
  * Main function in processGrain. It takes `scores.json`, `address.book`,
  * and a template for the transaction handler. It returns the completed
  * template required by the transaction handler.
@@ -39,24 +73,9 @@ const getScore = (score, addressBook) => {
  * @param {Object} tx, template for the transation handler
  * @returns {Object} transation settings
  */
-const mintSettings = (rawScore, addressBook, tx) => {
-  const {users} = rawScore[1];
-  const whitelistedGrain = users
-    .filter((leaf) => getScore(leaf, addressBook))
-    .map((leaf) => getScore(leaf, addressBook));
-
-  // ----------------------------------------------------------------
-  const total = whitelistedGrain
-    .map((score) => score[1])
-    .reduce((acc, val) => BigNumber(acc).plus(BigNumber(val)).toString());
-
-  const normalisedGrain = whitelistedGrain.map((user) => [
-    user[0],
-    BigNumber(user[1]).dividedBy(total).multipliedBy(tokensToMint).toString(),
-  ]);
-  // console.log(normalisedGrain);
-  // ----------------------------------------------------------------
-
+const mintSettings = (rawScore, addressbook, tx) => {
+  const whitelistedGrain = whitelisted(rawScore[1], addressbook);
+  const normalisedGrain = normalised(whitelistedGrain, tokensToMint);
   const settings = tx;
   settings[0].mints = normalisedGrain;
 
